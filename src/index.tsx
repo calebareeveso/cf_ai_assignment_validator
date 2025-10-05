@@ -378,8 +378,10 @@ app.post('/api/chat', async (c) => {
 	const payload = await c.req.json();
 	const messages = [...payload.messages];
 
-	// Check if this is a validation request (contains GITHUB_URL and README_CONTENT)
-	const isValidationRequest = messages.some((msg) => msg.content.includes('GITHUB_URL:') && msg.content.includes('README_CONTENT:'));
+	// Check if this is a validation request (first message in the conversation)
+	// If messages length is 1, it's the initial validation request
+	// If messages length > 1, it's a follow-up conversation
+	const isValidationRequest = messages.length === 1;
 
 	let systemPrompt;
 
@@ -387,7 +389,7 @@ app.post('/api/chat', async (c) => {
 		// Use the assignment validation system prompt for validation requests
 		systemPrompt = `You are an expert Cloudflare AI Developer and Technical Reviewer tasked with evaluating a project for the Cloudflare AI App fast-track assignment. Your goal is to strictly determine if a provided GitHub README document and repository URL indicate that the project meets all of the mandatory five core application requirements and the one mandatory repository naming requirement.
 
-CRITICAL: You MUST respond with EXACTLY the following format. Do not deviate from this format:
+CRITICAL: This is the INITIAL validation request. You MUST respond with EXACTLY the following structured format. Do not deviate from this format:
 
 ## Assignment Validation Results
 
@@ -441,7 +443,23 @@ REQUIREMENTS TO CHECK WITH DETAILED EVIDENCE EXPECTATIONS:
   * NOT acceptable: Just "has README" without content assessment`;
 	} else {
 		// Use the follow-up chat system prompt
-		systemPrompt = `You are a helpful assistant for Cloudflare AI development. The user has just completed an assignment validation and may ask questions about the results, requirements, or how to improve their project. Be helpful and specific in your responses. You can reference the validation results that were just completed and provide guidance on how to address any failing requirements.`;
+		systemPrompt = `You are a helpful assistant for Cloudflare AI development. The user has completed an assignment validation and is now asking follow-up questions.
+
+IMPORTANT: This is a FOLLOW-UP conversation, NOT the initial validation. You should:
+- Respond in natural, conversational sentences and paragraphs
+- DO NOT use the structured validation format (checkboxes, bullet points)
+- Provide detailed explanations and helpful guidance
+- Reference the previous validation results when relevant
+- Be specific and actionable in your advice
+- Use markdown for formatting (headings, bold, lists) but not the validation checkbox format
+- Answer questions about requirements, improvements, and best practices
+
+Example responses:
+- If asked "What failed?": Explain in sentences which requirements didn't pass and why
+- If asked "How to improve?": Provide step-by-step guidance in paragraph form
+- If asked about a specific requirement: Give detailed explanations and examples
+
+Remember: Use natural language and conversational tone, not structured validation format.`;
 	}
 
 	messages.unshift({ role: 'system', content: systemPrompt });

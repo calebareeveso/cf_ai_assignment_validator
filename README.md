@@ -4,19 +4,9 @@ A comprehensive AI-powered application built on Cloudflare Workers that validate
 
 **Live URL:** https://cloudflare-ai-assignment-validator.developement.workers.dev/
 
-## 🚨 Quick Fix: Database Error
+**Demo:**
 
-If you see **"D1_ERROR: no such table: messages"**, run this command:
-
-```bash
-# For local development
-wrangler d1 migrations apply cloudflare-ai-assignment-validator-database --local
-
-# For production (deployed app)
-wrangler d1 migrations apply cloudflare-ai-assignment-validator-database --remote
-```
-
-See the [Troubleshooting](#troubleshooting) section for more details.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/zJji5iy-4Ik?si=51RI3mTAnZ92SPMG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## I implemented:
 
@@ -212,13 +202,15 @@ If you get errors about the README_FETCHER workflow:
 
    Update the `database_id` in `wrangler.jsonc` with the ID from the output.
 
-2. **Run Production Database Migrations**
+2. **Run Production Database Migrations** ⚠️ **CRITICAL STEP**
 
    ```bash
    wrangler d1 migrations apply cloudflare-ai-assignment-validator-database --remote
    ```
 
-   **CRITICAL**: This step must be completed before deployment, or you'll get "no such table: messages" errors.
+   **CRITICAL**: This step MUST be completed BEFORE deployment, or you'll get "Failed to save messages" errors.
+
+   The migration creates the `messages` table required for chat history persistence.
 
 3. **Deploy to Cloudflare Workers**
 
@@ -226,11 +218,19 @@ If you get errors about the README_FETCHER workflow:
    npm run deploy
    ```
 
-4. **Verify Deployment**
-   - Check that the D1 database is properly connected
-   - Verify Workers AI binding is configured
-   - Confirm Workflows are properly set up
-   - Test the live application at your Workers URL
+4. **Verify Database Migration** (After Deployment)
+
+   ```bash
+   wrangler d1 execute cloudflare-ai-assignment-validator-database --remote --command "SELECT name FROM sqlite_master WHERE type='table';"
+   ```
+
+   You should see `messages` in the output.
+
+5. **Test Production Application**
+   - Visit your Workers URL
+   - Test validation with a GitHub repository
+   - Verify chat messages are being saved (no "Failed to save messages" errors)
+   - Check that chat history persists after refresh
 
 ## 📁 Project Structure
 
@@ -277,6 +277,24 @@ This table stores:
 - **Chat sessions** identified by `chatId`
 - **Timestamps** for message ordering
 - **Indexes** for efficient querying
+
+## 🚨 Quick Fix: Database Errors
+
+### Error: "D1_ERROR: no such table: messages" or "Failed to save messages"
+
+Run this command based on your environment:
+
+```bash
+# For local development
+wrangler d1 migrations apply cloudflare-ai-assignment-validator-database --local
+
+# For production (deployed app) ⚠️ MOST COMMON
+wrangler d1 migrations apply cloudflare-ai-assignment-validator-database --remote
+```
+
+**Production Note**: If your live app shows "Failed to save messages" errors, you need to run the migration with `--remote` flag, then the app will work immediately (no redeployment needed).
+
+See the [Troubleshooting](#troubleshooting) section for more details.
 
 ## 🔧 Key Features
 
