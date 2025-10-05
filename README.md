@@ -6,7 +6,7 @@ A comprehensive AI-powered application built on Cloudflare Workers that validate
 
 **Demo:**
 
-[![Demo Screenshot](https://github.com/calebareeveso/cf_ai_assignment_validator/blob/main/public/static/demo.png)](https://www.youtube.com/watch?v=zJji5iy-4Ik)
+[![Demo Screenshot](https://github.com/calebareeveso/cf_ai_assignment_validator/blob/main/public/static/demo-thumbnail.png)](https://www.youtube.com/watch?v=zJji5iy-4Ik)
 
 ## I implemented:
 
