@@ -6,7 +6,7 @@ A comprehensive AI-powered application built on Cloudflare Workers that validate
 
 **Demo:**
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/zJji5iy-4Ik?si=51RI3mTAnZ92SPMG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Demo Screenshot](https://github.com/calebareeveso/cf_ai_assignment_validator/blob/main/public/static/demo.png)](https://www.youtube.com/watch?v=zJji5iy-4Ik)
 
 ## I implemented:
 
